@@ -20,8 +20,9 @@ Typecho Writer 是一个原生 Android 写作客户端，配合一个单文件�
 | ✍️ 极简写作界面 | 打开即写，没有多余干扰 |
 | 💾 本地草稿自动保存 | 随时随地续写，不怕丢失 |
 | ✨ AI 润色 | 支持 村上春树 / 余华 / 莫言 / 通用 风格 |
-| 🖼 Unsplash 图片搜索 | 支持中文关键词自动翻译 |
-| ☁️ 图片上传 | 上传到 Cloudflare R2 |
+| 🖼 Unsplash 图片搜索 | 支持中文关键词自动翻译，由 UnsplashForTypecho 插件提供 |
+| 📷 Unsplash 相册 | 浏览 Unsplash 相册并选取图片，由 UnsplashForTypecho 插件提供 |
+| ☁️ 本地上传到 R2 图床 | 图片上传到 Cloudflare R2，由 UnsplashForTypecho 插件提供 |
 | 🧩 瀑布流展示 | 兼容 JustifiedGallery 插件，前端图片瀑布流布局 |
 | 📱 原生 Android | Kotlin + Jetpack Compose |
 
@@ -37,13 +38,13 @@ Typecho Writer 是一个原生 Android 写作客户端，配合一个单文件�
                                                             │
                                         ┌───────────────────┼───────────────────┐
                                         ▼                   ▼                   ▼
-                                  AiWriter 插件      UnsplashForTypecho     Cloudflare R2
-                                  （DeepSeek）          插件（搜图和相册）          （图床）
-
-                                        ┌───────────────────┐
-                                        │  JustifiedGallery │
-                                        │  插件（瀑布流）    │
-                                        └───────────────────┘
+                                  AiWriter 插件      UnsplashForTypecho     JustifiedGallery
+                                  （DeepSeek）       插件（图搜/相册/R2）    插件（瀑布流）
+                                                            │
+                                              ┌─────────────┴─────────────┐
+                                              ▼                           ▼
+                                        Unsplash API                Cloudflare R2
+                                        （图片搜索/相册）              （图床上传）
 ```
 
 - **服务端**：一个 PHP 文件（`write-api.php`），放进 Typecho 根目录即可。
@@ -73,9 +74,9 @@ Typecho Writer 是一个原生 Android 写作客户端，配合一个单文件�
 
 - 一个已经装好的 Typecho 博客（能正常访问）
 - 已安装并配置好 **AiWriter** 插件（**注意：AI 写作插件只支持 DeepSeek**）
-- 已安装并配置好 **UnsplashForTypecho** 插件
+- 已安装并配置好 **UnsplashForTypecho** 插件（包含 Unsplash 图片搜索、Unsplash 相册、本地图片上传到 Cloudflare R2）
 - 已安装并配置好 **JustifiedGallery** 瀑布流插件
-- 已配置好 Cloudflare R2（用于图片上传）
+- 已准备好 Cloudflare R2（用于 UnsplashForTypecho 插件的图片上传）
 - 一台 Android 手机
 
 ---
@@ -88,7 +89,9 @@ Typecho Writer 是一个原生 Android 写作客户端，配合一个单文件�
 2. 上传 / 解压 `plugins/` 中的插件包到 `usr/plugins/`
 3. 启用插件，并填写对应的配置项：
    - **AiWriter**：填入 DeepSeek 的 API Key 等信息
-   - **UnsplashForTypecho**：填入 Unsplash Access Key
+   - **UnsplashForTypecho**：
+     - 填入 Unsplash Access Key（用于图片搜索与相册）
+     - 配置 Cloudflare R2（Bucket、Access Key、Secret Key、公开访问域名等，用于本地上传到 R2 图床）
    - **JustifiedGallery**：用于前端文章图片瀑布流展示，按插件说明启用并配置
    - 其余插件按提示配置
 
@@ -139,10 +142,11 @@ Typecho Writer 是一个原生 Android 写作客户端，配合一个单文件�
 1. **打开就写** —— 启动 App 直接进入编辑界面。
 2. **自动保存** —— 输入内容会作为本地草稿自动保存。
 3. **AI 润色** —— 选择风格：村上春树 / 余华 / 莫言 / 通用，一键润色。
-4. **搜索配图** —— 输入中文关键词，自动翻译后在 Unsplash 搜索图片。
-5. **上传图片** —— 图片上传至 Cloudflare R2，返回图片链接。
-6. **写完就发** —— 一键发布到你的 Typecho 博客。
-7. **前端展示** —— 配合 JustifiedGallery 插件，文章图片以瀑布流形式展示。
+4. **搜索配图** —— 输入中文关键词，自动翻译后在 Unsplash 搜索图片（UnsplashForTypecho 插件）。
+5. **浏览相册** —— 查看 Unsplash 相册并选取图片（UnsplashForTypecho 插件）。
+6. **上传图片** —— 本地图片上传至 Cloudflare R2，返回图片链接（UnsplashForTypecho 插件）。
+7. **写完就发** —— 一键发布到你的 Typecho 博客。
+8. **前端展示** —— 配合 JustifiedGallery 插件，文章图片以瀑布流形式展示。
 
 ---
 
@@ -155,10 +159,13 @@ A：AiWriter 插件**只支持 DeepSeek**。请确认插件中填写的是 DeepS
 A：请检查 App 中填写的 Token 与 `write-api.php` 中的 Token 是否**完全一致**（注意首尾空格、大小写）。
 
 **Q：图片搜索搜不到结果？**  
-A：检查 UnsplashForTypecho 插件是否已启用并配置了有效的 Access Key；中文关键词会先自动翻译为英文再搜索。
+A：检查 UnsplashForTypecho 插件是否已启用并配置了有效的 Unsplash Access Key；中文关键词会先自动翻译为英文再搜索。
+
+**Q：Unsplash 相册无法加载？**  
+A：同样检查 UnsplashForTypecho 插件中的 Unsplash Access Key 是否有效，以及网络是否能正常访问 Unsplash API。
 
 **Q：图片上传失败？**  
-A：检查 Cloudflare R2 的配置（Bucket、Access Key、Secret Key、公开访问域名等）是否正确。
+A：图片上传由 UnsplashForTypecho 插件负责，请检查插件中的 Cloudflare R2 配置（Bucket、Access Key、Secret Key、公开访问域名等）是否正确。
 
 **Q：前端图片没有瀑布流效果？**  
 A：请确认 **JustifiedGallery** 插件已启用，并按照插件说明完成配置；同时确保文章内包含可用的图片链接。
@@ -195,9 +202,8 @@ cd <仓库目录>
 - **服务端**：PHP（单文件 `write-api.php`）
 - **博客系统**：Typecho
 - **AI**：DeepSeek（经 AiWriter 插件）
-- **图搜**：Unsplash（经 UnsplashForTypecho 插件）
+- **图搜 / 相册 / 图床**：UnsplashForTypecho 插件（Unsplash API + Cloudflare R2）
 - **瀑布流**：JustifiedGallery（Typecho 插件）
-- **图床**：Cloudflare R2
 
 ---
 
@@ -205,6 +211,7 @@ cd <仓库目录>
 
 - AiWriter 插件**仅支持 DeepSeek**。
 - `write-api.php` 中的 Token 与 App 中填写的 Token **必须一致**。
+- UnsplashForTypecho 插件同时负责 **Unsplash 图片搜索、Unsplash 相册、本地上传到 R2 图床**，请完整配置。
 - JustifiedGallery 为 Typecho 前端瀑布流插件，与 App 写作发布流程独立，但会影响博客前端的图片展示效果。
 - 请妥善保管 Token，不要泄露给他人。
 - 建议为接口开启 HTTPS，避免 Token 在传输过程中被窃听。
