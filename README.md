@@ -38,7 +38,7 @@ Typecho Writer 是一个原生 Android 写作客户端，配合一个单文件�
                                         ┌───────────────────┼───────────────────┐
                                         ▼                   ▼                   ▼
                                   AiWriter 插件      UnsplashForTypecho     Cloudflare R2
-                                  （DeepSeek）          插件（图搜）          （图床）
+                                  （DeepSeek）          插件（搜图和相册）          （图床）
 
                                         ┌───────────────────┐
                                         │  JustifiedGallery │
