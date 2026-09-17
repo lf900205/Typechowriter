@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit
 data class PublishResponse(
     val success: Boolean?,
     val cid: Int?,
+    val slug: String?,
     val error: String?
 )
 
@@ -62,13 +63,15 @@ data class UnsplashPhoto(
 data class UnsplashSearchResponse(
     val success: Boolean?,
     val results: List<UnsplashPhoto>?,
+    val query: String?,
     val error: String?
 )
 
 data class UnsplashCollection(
     val id: String?,
     val title: String?,
-    val total_photos: Int?
+    val total_photos: Int?,
+    val cover: String? = null
 )
 
 data class UnsplashCollectionsResponse(
@@ -90,7 +93,8 @@ interface TypechoApi {
         @Field("title") title: String,
         @Field("content") content: String,
         @Field("status") status: String,
-        @Field("tags") tags: String = ""
+        @Field("tags") tags: String = "",
+        @Field("slug") slug: String = ""
     ): PublishResponse
 
     @FormUrlEncoded
@@ -123,7 +127,8 @@ interface TypechoApi {
     @GET("write-api.php?action=unsplash-collection-photos")
     suspend fun unsplashCollectionPhotos(
         @Header("X-API-Token") token: String,
-        @Query("id") id: String
+        @Query("id") id: String,
+        @Query("page") page: Int = 1
     ): UnsplashSearchResponse
 }
 
