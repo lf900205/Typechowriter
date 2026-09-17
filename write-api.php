@@ -8,7 +8,7 @@ require_once __DIR__ . '/config.inc.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-define('API_TOKEN', '这里填写32位api自己生成即可，需要与APP一致');
+define('API_TOKEN', '这里是token');
 define('DEFAULT_MID', 1);
 
 // ============================================================
@@ -84,6 +84,83 @@ function getPluginConfig($pluginName) {
 }
 
 // ============================================================
+// 用 DeepSeek 生成英文 slug
+// ============================================================
+function generateSlugByAI($title) {
+    try {
+        $cfg = getPluginConfig('AiWriter');
+        $apiKey = trim($cfg['deepseekKey'] ?? '');
+        if ($apiKey === '') {
+            error_log('[slug] AiWriter 未配置 deepseekKey');
+            return uniqid('post-', true);
+        }
+
+        $prompt = "把下面的中文标题翻译成一个英文 URL slug。"
+                . "要求：只输出英文小写字母和连字符，最长 6 个单词，"
+                . "不要引号，不要任何解释。\n\n标题：{$title}";
+
+        $payload = json_encode([
+            'model' => 'deepseek-chat',
+            'messages' => [['role' => 'user', 'content' => $prompt]],
+            'temperature' => 0.2,
+            'max_tokens'  => 30,
+        ], JSON_UNESCAPED_UNICODE);
+
+        $ch = curl_init('https://api.deepseek.com/v1/chat/completions');
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => 1,
+            CURLOPT_POSTFIELDS     => $payload,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => [
+                "Authorization: Bearer {$apiKey}",
+                "Content-Type: application/json",
+            ],
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_TIMEOUT        => 15,
+        ]);
+        $raw = curl_exec($ch);
+        $err = curl_error($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($err) {
+            error_log("[slug] curl 错误: {$err}");
+            return uniqid('post-', true);
+        }
+        if ($httpCode !== 200) {
+            error_log("[slug] HTTP {$httpCode}: " . substr($raw, 0, 500));
+            return uniqid('post-', true);
+        }
+
+        $resp = json_decode($raw, true);
+        $text = trim($resp['choices'][0]['message']['content'] ?? '');
+        if ($text === '') {
+            error_log("[slug] AI 返回为空: " . substr($raw, 0, 500));
+            return uniqid('post-', true);
+        }
+
+        $slug = strtolower($text);
+        $slug = preg_replace('/[^a-z0-9\-]/', '-', $slug);
+        $slug = preg_replace('/-+/', '-', $slug);
+        $slug = trim($slug, '-');
+        $slug = substr($slug, 0, 60);
+
+        if ($slug === '') {
+            error_log("[slug] 清洗后为空，AI 原文: {$text}");
+            return uniqid('post-', true);
+        }
+
+        error_log("[slug] 成功: {$title} -> {$slug}");
+        return $slug;
+
+    } catch (Throwable $e) {
+        error_log("[slug] 异常: " . $e->getMessage());
+        return uniqid('post-', true);
+    }
+}
+
+// ============================================================
 // 发布文章
 // ============================================================
 function publishPost() {
@@ -92,8 +169,10 @@ function publishPost() {
     $status  = $_POST['status'] ?? 'publish';
     $tags    = trim($_POST['tags'] ?? '');
     $cid     = isset($_POST['cid']) ? (int)$_POST['cid'] : 0;
+    $slug    = trim($_POST['slug'] ?? '');
 
     if ($title === '') throw new Exception('标题不能为空');
+    if ($slug === '') $slug = generateSlugByAI($title);
 
     $db = \Typecho\Db::get();
     $prefix = $db->getPrefix();
@@ -112,7 +191,7 @@ function publishPost() {
     } else {
         $cid = $db->query($db->insert('table.contents')->rows([
             'title'        => $title,
-            'slug'         => uniqid('post-', true),
+            'slug'         => $slug,
             'created'      => $now,
             'modified'     => $now,
             'text'         => $content,
@@ -153,7 +232,7 @@ function publishPost() {
         }
     }
 
-    return ['success' => true, 'cid' => (int)$cid];
+    return ['success' => true, 'cid' => (int)$cid, 'slug' => $slug];
 }
 
 // ============================================================
@@ -167,7 +246,7 @@ function polishPost() {
     $apiKey = trim($cfg['deepseekKey'] ?? '');
     if ($apiKey === '') throw new Exception('AiWriter 未配置 DeepSeek Key');
 
-    $model   = $cfg['deepseekModel'] ?? 'deepseek-chat';
+    $model   = 'deepseek-chat';
     $timeout = intval($cfg['timeout'] ?? 60) ?: 60;
 
     $styleOverride = trim($_POST['style'] ?? '');
@@ -368,7 +447,6 @@ function unsplashSearch() {
     $accessKey = trim($pcfg['accessKey'] ?? '');
     if ($accessKey === '') throw new Exception('未配置 Unsplash Access Key');
 
-    // ↓↓↓ 翻译层：含中文时，用 DeepSeek 翻译成英文 ↓↓↓
     if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $query)) {
         $translated = translateToEnglish($query);
         if ($translated !== '') {
@@ -400,13 +478,12 @@ function unsplashSearch() {
     return [
         'success' => true,
         'results' => formatUnsplashPhotos(json_decode($raw, true)['results'] ?? []),
-        'query'   => $query,   // 返回翻译后的实际搜索词，便于调试
+        'query'   => $query,
     ];
 }
 
 // ============================================================
 // 用 DeepSeek 把中文关键词翻译成英文
-// 失败时返回空字符串（降级：直接用原中文去搜 Unsplash）
 // ============================================================
 function translateToEnglish($text) {
     try {
@@ -420,7 +497,7 @@ function translateToEnglish($text) {
                 . "中文：{$text}";
 
         $payload = json_encode([
-            'model' => $cfg['deepseekModel'] ?? 'deepseek-chat',
+            'model' => 'deepseek-chat',
             'messages' => [['role' => 'user', 'content' => $prompt]],
             'temperature' => 0.2,
             'max_tokens'  => 30,
@@ -447,7 +524,6 @@ function translateToEnglish($text) {
 
         $resp = json_decode($raw, true);
         $text2 = $resp['choices'][0]['message']['content'] ?? '';
-        // 去掉引号、换行、句号等杂质
         $text2 = trim($text2, " \t\n\r\"'“”‘’。.");
         return $text2;
     } catch (Throwable $e) {
