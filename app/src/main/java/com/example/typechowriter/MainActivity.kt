@@ -184,13 +184,16 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
     var sending by remember { mutableStateOf(false) }
     var polishing by remember { mutableStateOf(false) }
     var uploading by remember { mutableStateOf(false) }
-
-    // ↓↓↓ 新增：上传进度 和 进度条的显隐 ↓↓↓
     var uploadCurrent by remember { mutableStateOf(0) }
     var uploadTotal by remember { mutableStateOf(0) }
     var showProgressBar by remember { mutableStateOf(false) }
 
     var draftSavedAt by remember { mutableStateOf(0L) }
+
+    // ↓↓↓ 分类相关状态 ↓↓↓
+    val categories = remember { mutableStateListOf<Category>() }
+    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+    var showCategoryDialog by remember { mutableStateOf(false) }
 
     var polishResult by remember { mutableStateOf<PolishResponse?>(null) }
     var showStyleDialog by remember { mutableStateOf(false) }
@@ -207,6 +210,23 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
         draftSavedAt = Settings.draftSavedAt(context).first()
         if (title.isNotBlank() || content.isNotBlank()) {
             message = "已恢复上次未完成的草稿"
+        }
+
+        // 加载分类
+        if (baseUrl.isNotBlank() && token.isNotBlank()) {
+            try {
+                val api = ApiClient.create(baseUrl)
+                val res = api.getCategories(token)
+                if (res.success == true) {
+                    val list = res.results ?: emptyList()
+                    categories.clear()
+                    categories.addAll(list)
+                    // 默认选中第一个
+                    if (list.isNotEmpty() && selectedCategory == null) {
+                        selectedCategory = list.first()
+                    }
+                }
+            } catch (_: Exception) {}
         }
     }
 
@@ -226,7 +246,6 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
         if (uris.isNotEmpty()) {
-            // ↓↓↓ 关键：用户从相册返回后，立即关闭弹窗，让用户看到进度 ↓↓↓
             showImageDialog = false
 
             scope.launch {
@@ -265,7 +284,6 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
                     message = "上传失败，$failCount 张"
                 }
 
-                // 3 秒后自动清掉消息
                 delay(3000)
                 if (!uploading) message = ""
             }
@@ -295,6 +313,15 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
                         }
                     },
                     actions = {
+                        // ↓↓↓ 分类按钮（显示当前分类名） ↓↓↓
+                        TextButton(onClick = { showCategoryDialog = true }) {
+                            Text(
+                                selectedCategory?.name ?: "默认分类",
+                                fontSize = 15.sp,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        // 设置按钮
                         TextButton(
                             onClick = onOpenConfig,
                             colors = ButtonDefaults.textButtonColors(
@@ -366,9 +393,11 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
 
                                         try {
                                             val api = ApiClient.create(baseUrl)
+                                            // ↓↓↓ 传分类 ID ↓↓↓
                                             val res = api.publish(
                                                 token, finalTitle, content,
-                                                "publish", tags, ""
+                                                "publish", tags, "",
+                                                selectedCategory?.mid ?: 0
                                             )
                                             if (res.success == true) {
                                                 message = "已发布，cid=${res.cid}"
@@ -469,7 +498,6 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
                 }
             )
 
-            // ↓↓↓ 上传进度条（仅上传时显示） ↓↓↓
             if (showProgressBar) {
                 Surface(
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.06f),
@@ -479,9 +507,7 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     Column(Modifier.padding(12.dp)) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(16.dp),
                                 strokeWidth = 2.dp,
@@ -510,7 +536,6 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
                 }
             }
 
-            // 普通提示消息
             if (message.isNotBlank() && !showProgressBar) {
                 Text(
                     message,
@@ -520,6 +545,19 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
                 )
             }
         }
+    }
+
+    // ↓↓↓ 分类选择对话框 ↓↓↓
+    if (showCategoryDialog) {
+        CategoryDialog(
+            categories = categories,
+            selected = selectedCategory,
+            onDismiss = { showCategoryDialog = false },
+            onConfirm = { c ->
+                selectedCategory = c
+                showCategoryDialog = false
+            }
+        )
     }
 
     if (showStyleDialog) {
@@ -580,7 +618,7 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
                     Spacer(Modifier.height(4.dp))
                     Text(
                         (res.content ?: "").take(500) +
-                                if ((res.content?.length ?: 0) > 500) "..." else "",
+                            if ((res.content?.length ?: 0) > 500) "..." else "",
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -599,6 +637,61 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
             }
         )
     }
+}
+
+// ============================================================
+// 分类选择对话框
+// ============================================================
+
+@Composable
+fun CategoryDialog(
+    categories: List<Category>,
+    selected: Category?,
+    onDismiss: () -> Unit,
+    onConfirm: (Category) -> Unit
+) {
+    var pending by remember { mutableStateOf(selected) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("选择分类") },
+        text = {
+            if (categories.isEmpty()) {
+                Text("加载中…或没有分类", style = MaterialTheme.typography.bodySmall)
+            } else {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
+                    categories.forEach { c ->
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = (pending?.mid == c.mid),
+                                    onClick = { pending = c }
+                                )
+                                .padding(vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = (pending?.mid == c.mid),
+                                onClick = { pending = c }
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(c.name ?: "未命名")
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                enabled = pending != null,
+                onClick = { pending?.let { onConfirm(it) } }
+            ) { Text("确定") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("取消") }
+        }
+    )
 }
 
 // ============================================================
@@ -715,7 +808,7 @@ fun ImageDialog(
                                 fontSize = 15.sp,
                                 fontWeight = if (tabIndex == idx) FontWeight.SemiBold else FontWeight.Normal,
                                 color = if (tabIndex == idx) MaterialTheme.colorScheme.onSurface
-                                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                       else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                             )
                             Spacer(Modifier.height(4.dp))
                             Box(
@@ -767,7 +860,7 @@ fun LocalImageTab(onPickLocal: () -> Unit) {
         )
         Spacer(Modifier.height(6.dp))
         Text(
-            "可多选，按选择顺序自动编号",
+            "可多选，按选择顺序自动编号（图1、图2、图3…）",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f)
         )
