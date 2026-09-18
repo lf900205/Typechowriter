@@ -27,6 +27,7 @@ data class PublishResponse(
     val success: Boolean?,
     val cid: Int?,
     val slug: String?,
+    val category: Int?,
     val error: String?
 )
 
@@ -80,6 +81,18 @@ data class UnsplashCollectionsResponse(
     val error: String?
 )
 
+// ↓↓↓ 分类 ↓↓↓
+data class Category(
+    val mid: Int?,
+    val name: String?
+)
+
+data class CategoriesResponse(
+    val success: Boolean?,
+    val results: List<Category>?,
+    val error: String?
+)
+
 // ============================================================
 // Retrofit 接口
 // ============================================================
@@ -94,7 +107,8 @@ interface TypechoApi {
         @Field("content") content: String,
         @Field("status") status: String,
         @Field("tags") tags: String = "",
-        @Field("slug") slug: String = ""
+        @Field("slug") slug: String = "",
+        @Field("category") category: Int = 0
     ): PublishResponse
 
     @FormUrlEncoded
@@ -130,6 +144,11 @@ interface TypechoApi {
         @Query("id") id: String,
         @Query("page") page: Int = 1
     ): UnsplashSearchResponse
+
+    @GET("write-api.php?action=get-categories")
+    suspend fun getCategories(
+        @Header("X-API-Token") token: String
+    ): CategoriesResponse
 }
 
 // ============================================================
