@@ -8,7 +8,7 @@ require_once __DIR__ . '/config.inc.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-define('API_TOKEN', '这里是token');
+define('API_TOKEN', '这里填写token');
 define('DEFAULT_MID', 1);
 
 // ============================================================
@@ -42,6 +42,9 @@ try {
             break;
         case 'unsplash-collection-photos':
             echo json_encode(unsplashCollectionPhotos());
+            break;
+        case 'get-categories':
+            echo json_encode(getCategories());
             break;
         case 'debug':
             echo json_encode([
@@ -80,6 +83,30 @@ function getPluginConfig($pluginName) {
         return [];
     } catch (Throwable $e) {
         return [];
+    }
+}
+
+// ============================================================
+// 获取所有分类
+// ============================================================
+function getCategories() {
+    try {
+        $db = \Typecho\Db::get();
+        $rows = $db->fetchAll(
+            $db->select('mid', 'name')->from('table.metas')
+               ->where('type = ?', 'category')
+               ->order('order', \Typecho\Db::SORT_ASC)
+        );
+        $out = [];
+        foreach ($rows as $r) {
+            $out[] = [
+                'mid'  => (int)$r['mid'],
+                'name' => $r['name'],
+            ];
+        }
+        return ['success' => true, 'results' => $out];
+    } catch (Throwable $e) {
+        return ['success' => false, 'error' => $e->getMessage()];
     }
 }
 
@@ -170,6 +197,9 @@ function publishPost() {
     $tags    = trim($_POST['tags'] ?? '');
     $cid     = isset($_POST['cid']) ? (int)$_POST['cid'] : 0;
     $slug    = trim($_POST['slug'] ?? '');
+    // ↓↓↓ 新增：接收分类 ID ↓↓↓
+    $category = isset($_POST['category']) ? (int)$_POST['category'] : 0;
+    if ($category <= 0) $category = DEFAULT_MID;
 
     if ($title === '') throw new Exception('标题不能为空');
     if ($slug === '') $slug = generateSlugByAI($title);
@@ -205,10 +235,11 @@ function publishPost() {
             'allowFeed'    => 1,
             'parent'       => 0,
         ]));
+        // ↓↓↓ 用选择的分类 ↓↓↓
         $db->query($db->insert('table.relationships')->rows([
-            'cid' => $cid, 'mid' => DEFAULT_MID,
+            'cid' => $cid, 'mid' => $category,
         ]));
-        $db->query("UPDATE {$prefix}metas SET count = count + 1 WHERE mid = " . (int)DEFAULT_MID);
+        $db->query("UPDATE {$prefix}metas SET count = count + 1 WHERE mid = " . $category);
     }
 
     if ($tags !== '') {
@@ -232,7 +263,7 @@ function publishPost() {
         }
     }
 
-    return ['success' => true, 'cid' => (int)$cid, 'slug' => $slug];
+    return ['success' => true, 'cid' => (int)$cid, 'slug' => $slug, 'category' => $category];
 }
 
 // ============================================================
@@ -436,7 +467,7 @@ function uploadToR2() {
 }
 
 // ============================================================
-// Unsplash 搜索（支持中文，含翻译层）
+// Unsplash 搜索（支持中文）
 // ============================================================
 function unsplashSearch() {
     $query = trim($_GET['query'] ?? '');
