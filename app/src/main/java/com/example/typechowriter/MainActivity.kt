@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -190,7 +191,7 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
 
     var draftSavedAt by remember { mutableStateOf(0L) }
 
-    // ↓↓↓ 分类相关状态 ↓↓↓
+    // 分类相关状态
     val categories = remember { mutableStateListOf<Category>() }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     var showCategoryDialog by remember { mutableStateOf(false) }
@@ -221,7 +222,6 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
                     val list = res.results ?: emptyList()
                     categories.clear()
                     categories.addAll(list)
-                    // 默认选中第一个
                     if (list.isNotEmpty() && selectedCategory == null) {
                         selectedCategory = list.first()
                     }
@@ -313,7 +313,7 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
                         }
                     },
                     actions = {
-                        // ↓↓↓ 分类按钮（显示当前分类名） ↓↓↓
+                        // 分类按钮
                         TextButton(onClick = { showCategoryDialog = true }) {
                             Text(
                                 selectedCategory?.name ?: "默认分类",
@@ -393,7 +393,6 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
 
                                         try {
                                             val api = ApiClient.create(baseUrl)
-                                            // ↓↓↓ 传分类 ID ↓↓↓
                                             val res = api.publish(
                                                 token, finalTitle, content,
                                                 "publish", tags, "",
@@ -547,7 +546,7 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
         }
     }
 
-    // ↓↓↓ 分类选择对话框 ↓↓↓
+    // 分类选择对话框
     if (showCategoryDialog) {
         CategoryDialog(
             categories = categories,
@@ -618,7 +617,7 @@ fun WriteScreen(onOpenConfig: () -> Unit) {
                     Spacer(Modifier.height(4.dp))
                     Text(
                         (res.content ?: "").take(500) +
-                            if ((res.content?.length ?: 0) > 500) "..." else "",
+                                if ((res.content?.length ?: 0) > 500) "..." else "",
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -762,7 +761,7 @@ fun ImageDialog(
     onPickUnsplash: (String) -> Unit
 ) {
     var tabIndex by remember { mutableStateOf(0) }
-    val tabs = listOf("本地图片", "搜索", "我的相册")
+    val tabs = listOf("本地图片", "搜索图片", "我的相册")
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -790,17 +789,21 @@ fun ImageDialog(
                     }
                 }
 
+                // ↓↓↓ 三个 Tab 均分居中，无点击方块背景 ↓↓↓
                 Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(28.dp)
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     tabs.forEachIndexed { idx, t ->
+                        val interaction = remember { MutableInteractionSource() }
                         Column(
                             Modifier
-                                .clickable { tabIndex = idx }
-                                .padding(vertical = 6.dp),
+                                .weight(1f)
+                                .clickable(
+                                    interactionSource = interaction,
+                                    indication = null
+                                ) { tabIndex = idx }
+                                .padding(vertical = 10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
@@ -808,7 +811,7 @@ fun ImageDialog(
                                 fontSize = 15.sp,
                                 fontWeight = if (tabIndex == idx) FontWeight.SemiBold else FontWeight.Normal,
                                 color = if (tabIndex == idx) MaterialTheme.colorScheme.onSurface
-                                       else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                             )
                             Spacer(Modifier.height(4.dp))
                             Box(
@@ -860,7 +863,7 @@ fun LocalImageTab(onPickLocal: () -> Unit) {
         )
         Spacer(Modifier.height(6.dp))
         Text(
-            "可多选，按选择顺序自动编号（图1、图2、图3…）",
+            "可多选，按选择顺序自动编号",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f)
         )
