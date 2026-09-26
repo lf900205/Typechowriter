@@ -8,7 +8,7 @@ require_once __DIR__ . '/config.inc.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-define('API_TOKEN', 'ue8RRVofGBZYlGpJCb2QHiZaSmGc6UQe');
+define('API_TOKEN', 'TOKEN填写在这里');
 define('DEFAULT_MID', 1);
 
 // ============================================================
