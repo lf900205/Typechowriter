@@ -1,0 +1,26 @@
+# Gradle
+.gradle/
+build/
+Add-Content .gitignore "`napp/release/"
+# Android Studio / IntelliJ
+.idea/
+*.iml
+local.properties
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 构建产物
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+
+# 签名文件，千万不要上传
+*.jks
+*.keystore
+.kotlin/
+
+app/release/
