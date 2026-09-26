@@ -1,241 +1,274 @@
-Typecho Writer
-涓€涓负 Typecho 鍗氬鎵撻€犵殑瀹夊崜鍐欎綔瀹㈡埛绔€?
+# Typecho Writer
 
-鎵撳紑灏卞啓锛屽啓瀹屽氨鍙戙€傛湰鍦拌崏绋胯嚜鍔ㄤ繚瀛樸€丄I 娑﹁壊銆乁nsplash 閰嶅浘銆佸浘鐗囦笂浼?R2銆佹枃绔犲垪琛?/ 缂栬緫 / 鍒犻櫎锛屽叏閮ㄥ唴缃€?
+一个为 Typecho 博客打造的安卓写作客户端。
 
-鉁?鍔熻兘
-鍔熻兘	璇存槑
-鏋佺畝鍐欎綔鐣岄潰	鐧界焊椋庢牸锛屾棤杈规杈撳叆妗嗭紝涓撴敞鍐欎綔
-鏈湴鑽夌鑷姩淇濆瓨	800ms 鏃犳搷浣滆嚜鍔ㄤ繚瀛橈紝App 琚潃涓嶄涪鍐呭
-鍒嗙被閫夋嫨	鍙戝竷鏃跺彲閫?Typecho 鍚庡彴鐨勬墍鏈夊垎绫?
-AI 娑﹁壊	4 绉嶉鏍硷細鏉戜笂鏄ユ爲 / 浣欏崕 / 鑾█ / 閫氱敤
-Unsplash 閰嶅浘	鏀寔涓枃鎼滅储锛堣嚜鍔ㄧ炕璇戞垚鑻辨枃锛夛紝鍙祻瑙堣嚜宸辩殑鐩稿唽
-澶氶€夋彃鍥?鏈湴鐩稿唽澶氶€?+ Unsplash 澶氶€夛紝鎸夐『搴忚嚜鍔ㄧ紪鍙?
-鍥剧墖涓婁紶 R2	涓婁紶鍒?Cloudflare R2锛岃嚜鍔ㄦ彃鍏?Markdown
-鏂囩珷绠＄悊	鏌ョ湅宸插彂甯冩枃绔犲垪琛紝鏀寔缂栬緫銆佸垹闄?
-AI 鐢熸垚 slug	鍙戝竷鏃惰嚜鍔ㄧ敓鎴愯嫳鏂?URL slug锛堝 walk-in-park-flowers-bloom锛?
-Unsplash 鍚堣	瀹屾暣缃插悕 + 閾炬帴 + UTM 鍙傛暟 + Download Tracking
-馃彈锔?鏋舵瀯
-text
-鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?       HTTP + Token        鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?
-鈹?  Android App       鈹?鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈻?鈹?  write-api.php      鈹?
-鈹? (Kotlin + Compose) 鈹?                           鈹?  (Typecho 鏍圭洰褰?    鈹?
-鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?                           鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?
-                                                              鈹?
-                                                    鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹尖攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?
-                                                    鈻?        鈻?        鈻?
+打开就写，写完就发。本地草稿自动保存、AI 润色、Unsplash 配图、图片上传 R2、文章列表 / 编辑 / 删除，全部内置。
+
+## ✨ 功能
+
+| 功能 | 说明 |
+| --- | --- |
+| 极简写作界面 | 白纸风格，无边框输入框，专注写作 |
+| 本地草稿自动保存 | 800ms 无操作自动保存，App 被杀不丢内容 |
+| 分类选择 | 发布时可选 Typecho 后台的所有分类 |
+| AI 润色 | 4 种风格：村上春树 / 余华 / 莫言 / 通用 |
+| Unsplash 配图 | 支持中文搜索（自动翻译成英文），可浏览自己的相册 |
+| 多选插图 | 本地相册多选 + Unsplash 多选，按顺序自动编号 |
+| 图片上传 R2 | 上传到 Cloudflare R2，自动插入 Markdown |
+| 文章管理 | 查看已发布文章列表，支持编辑、删除 |
+| AI 生成 slug | 发布时自动生成英文 URL slug（如 walk-in-park-flowers-bloom） |
+| Unsplash 合规 | 完整署名 + 链接 + UTM 参数 + Download Tracking |
+
+## 🏗️ 架构
+
+```
+┌─────────────────────┐        HTTP + Token        ┌──────────────────────┐
+│   Android App       │ ─────────────────────────► │   write-api.php      │
+│  (Kotlin + Compose) │                            │   (Typecho 根目录)    │
+└─────────────────────┘                            └──────────────────────┘
+                                                              │
+                                                    ┌─────────┼─────────┐
+                                                    ▼         ▼         ▼
                                               Typecho DB  DeepSeek  Unsplash
                                                                     + R2
-鏈嶅姟绔細鍗曚釜 PHP 鏂囦欢 write-api.php锛屾斁鍦?Typecho 鏍圭洰褰?
+```
 
-瀹㈡埛绔細Android 鍘熺敓锛孠otlin + Jetpack Compose
+- 服务端：单个 PHP 文件 `write-api.php`，放在 Typecho 根目录
+- 客户端：Android 原生，Kotlin + Jetpack Compose
+- 依赖插件：AiWriter、UnsplashForTypecho、JustifiedGallery（服务端已启用）
 
-渚濊禆鎻掍欢锛欰iWriter銆乁nsplashForTypecho銆丣ustifiedGallery锛堟湇鍔＄宸插惎鐢級
+## 📦 部署
 
-馃摝 閮ㄧ讲
-涓€銆佹湇鍔＄
-1. 鍓嶇疆鏉′欢
-Typecho 鍚庡彴蹇呴』宸插惎鐢ㄤ互涓嬫彃浠讹紙App 浠庡畠浠殑閰嶇疆閲岃鍙?Key锛夛細
+### 一、服务端
 
-鎻掍欢	鐢ㄩ€?蹇呴渶閰嶇疆
-AiWriter	DeepSeek Key锛堟鼎鑹?/ 缈昏瘧 / slug锛?deepseekKey
-UnsplashForTypecho	Unsplash Access Key + R2 閰嶇疆	accessKey銆乽sername銆乺2AccessKey銆乺2SecretKey銆乺2Bucket銆乺2AccountId銆乺2PublicUrl銆乺2Folder
-JustifiedGallery	鍓嶅彴娓叉煋 [jpg] 鐎戝竷娴?淇濇寔鍚敤鍗冲彲
-2. 閮ㄧ讲 write-api.php
-鎶?write-api.php 鏀惧埌 Typecho 缃戠珯鏍圭洰褰曪紙鍜?config.inc.php 鍚岀骇锛夛細
+#### 1. 前置条件
 
-text
-/www/wwwroot/浣犵殑鍩熷悕/write-api.php
-3. 淇敼 write-api.php 椤堕儴閰嶇疆
-php
-// 鏀规垚涓€涓綘鑷繁鐨勯暱闅忔満瀛楃涓诧紙32 浣嶄互涓婏級
+Typecho 后台必须已启用以下插件（App 从它们的配置里读取 Key）：
+
+| 插件 | 用途 | 必需配置 |
+| --- | --- | --- |
+| AiWriter | DeepSeek Key（润色 / 翻译 / slug） | deepseekKey |
+| UnsplashForTypecho | Unsplash Access Key + R2 配置 | accessKey、username、r2AccessKey、r2SecretKey、r2Bucket、r2AccountId、r2PublicUrl、r2Folder |
+| JustifiedGallery | 前台渲染 [jpg] 瀑布流 | 保持启用即可 |
+
+#### 2. 部署 write-api.php
+
+把 `write-api.php` 放到 Typecho 网站根目录（和 `config.inc.php` 同级）：
+
+```
+/www/wwwroot/你的域名/write-api.php
+```
+
+#### 3. 修改 write-api.php 顶部配置
+
+```php
+// 改成一个你自己的长随机字符串（32 位以上）
 define('API_TOKEN', 'CHANGE_ME_TO_A_LONG_RANDOM_STRING');
 
-// 榛樿鍒嗙被 ID锛堝彲鍦?Typecho 鍚庡彴 鈫?鍒嗙被 閲岀湅 URL 鐨?mid 鍙傛暟锛?
+// 默认分类 ID（可在 Typecho 后台 → 分类 里看 URL 的 mid 参数）
 define('DEFAULT_MID', 1);
-鐢熸垚闅忔満 Token 鐨勫揩鎹锋柟娉曪紙PowerShell锛夛細
+```
 
-powershell
+生成随机 Token 的快捷方法（PowerShell）：
+
+```powershell
 -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 32 | % {[char]$_})
-4. 楠岃瘉鎺ュ彛
-powershell
-curl.exe "https://浣犵殑鍩熷悕/write-api.php?action=publish" -H "X-API-Token: 浣犵殑Token" -d "title=娴嬭瘯&content=鍐呭&status=publish"
-棰勬湡杩斿洖锛?
+```
 
-json
+#### 4. 验证接口
+
+```powershell
+curl.exe "https://你的域名/write-api.php?action=publish" -H "X-API-Token: 你的Token" -d "title=测试&content=内容&status=publish"
+```
+
+预期返回：
+
+```json
 {"success":true,"cid":123,"slug":"test","category":1}
-浜屻€佸鎴风缂栬瘧
-1. 鐜瑕佹眰
-Android Studio Hedgehog锛?023.1.1锛夋垨鏇存柊
+```
 
-JDK 17
+### 二、客户端编译
 
-Android SDK 34
+#### 1. 环境要求
 
-minSdk 26锛圓ndroid 8.0锛?
+- Android Studio Hedgehog（2023.1.1）或更新
+- JDK 17
+- Android SDK 34
+- minSdk 26（Android 8.0）
 
-2. 鎵撳紑椤圭洰 鈫?Sync 鈫?Build 鈫?瑁呭埌鎵嬫満
-棣栨缂栬瘧浼氫笅杞戒緷璧栵紝绾?1-3 鍒嗛挓銆?
+#### 2. 打开项目 → Sync → Build → 装到手机
 
-3. 棣栨鍚姩閰嶇疆
-鎵撳紑 App 鈫?濉細
+首次编译会下载依赖，约 1-3 分钟。
 
-瀛楁	鍐呭
-鍗氬鍦板潃	https://浣犵殑鍩熷悕锛堜笉瑕佸甫 write-api.php锛屼笉瑕佸甫灏鹃儴鏂滄潬锛?
-API Token	鍜?write-api.php 閲岀殑 API_TOKEN 瀹屽叏涓€鑷?
-淇濆瓨鍚庤繘鍏ュ啓鏃ュ織鐣岄潰銆?
+#### 3. 首次启动配置
 
-馃摉 浣跨敤璇存槑
-鍐欐枃绔?
-鐐规爣棰樿緭鍏ユ鍐欐爣棰?
+打开 App → 填：
 
-鐐规鏂囪緭鍏ユ鍐欏唴瀹癸紙鏀寔 Markdown锛?
+| 字段 | 内容 |
+| --- | --- |
+| 博客地址 | https://你的域名（不要带 write-api.php，不要带尾部斜杠） |
+| API Token | 和 write-api.php 里的 API_TOKEN 完全一致 |
 
-椤舵爮鍙充晶閫夊垎绫?
+保存后进入写日志界面。
 
-搴曟爮涓変釜鎸夐挳锛?
+## 📖 使用说明
 
-娑﹁壊锛欰I 娑﹁壊锛堝脊椋庢牸閫夋嫨锛?
+### 写文章
 
-鎻掑浘锛氭彃鍏ユ湰鍦板浘鐗?/ Unsplash 鍥剧墖
+1. 点标题输入框写标题
+2. 点正文输入框写内容（支持 Markdown）
+3. 顶栏右侧选分类
+4. 底栏三个按钮：
+   - **润色**：AI 润色（弹风格选择）
+   - **插图**：插入本地图片 / Unsplash 图片
+   - **发布**：发布到博客
 
-鍙戝竷锛氬彂甯冨埌鍗氬
+### 插图
 
-鎻掑浘
-鐐?鎻掑浘"鈫?涓変釜 Tab锛?
+点"插图"→ 三个 Tab：
 
-Tab	璇存槑
-鏈湴鍥剧墖	浠庢墜鏈虹浉鍐屽閫夛紝涓婁紶鍒?R2锛岃嚜鍔ㄧ紪鍙锋彃鍏?
-鎼滅储鍥剧墖	Unsplash 鎼滅储锛堟敮鎸佷腑鏂囷級锛屽閫夊悗鎻掑叆
-鎴戠殑鐩稿唽	娴忚浣?Unsplash 璐﹀彿涓嬬殑鐩稿唽锛屽閫夋彃鍏?
-閫変腑鍥剧墖浼氬湪鍙充笂瑙掓樉绀哄簭鍙凤紙1銆?銆?鈥︼級锛屽簳閮ㄥ嚭鐜?鎻掑叆"鎸夐挳銆?
+| Tab | 说明 |
+| --- | --- |
+| 本地图片 | 从手机相册多选，上传到 R2，自动编号插入 |
+| 搜索图片 | Unsplash 搜索（支持中文），多选后插入 |
+| 我的相册 | 浏览你 Unsplash 账号下的相册，多选插入 |
 
-缂栬緫 / 鍒犻櫎鏂囩珷
-椤舵爮鐐?鏂囩珷" 鈫?寮瑰嚭鏂囩珷鍒楄〃 鈫?姣忚鍙充晶鏈?缂栬緫"鍜?鍒犻櫎"鎸夐挳銆?
+选中图片会在右上角显示序号（1、2、3…），底部出现"插入"按钮。
 
-缂栬緫 鈫?鍐呭鍥炲～鍒板啓鏃ュ織鐣岄潰锛屾寜閽彉"鏇存柊"
+### 编辑 / 删除文章
 
-鍒犻櫎 鈫?寮圭‘璁ゆ锛岀‘璁ゅ悗浠庢暟鎹簱鍒犻櫎
+顶栏点"文章" → 弹出文章列表 → 每行右侧有"编辑"和"删除"按钮。
 
-鑽夌
-鍐欐枃绔犳椂鑷姩淇濆瓨锛岄《鏍忔樉绀?鑽夌 MM-dd HH:mm
+- 编辑 → 内容回填到写日志界面，按钮变"更新"
+- 删除 → 弹确认框，确认后从数据库删除
 
-App 琚潃 / 鍏抽棴鍚庨噸鏂版墦寮€浼氳嚜鍔ㄦ仮澶?
+### 草稿
 
-鍙戝竷鎴愬姛鍚庤嚜鍔ㄦ竻绌?
+- 写文章时自动保存，顶栏显示 `草稿 MM-dd HH:mm`
+- App 被杀 / 关闭后重新打开会自动恢复
+- 发布成功后自动清空
 
-鈿狅笍 娉ㄦ剰浜嬮」
-1. Token 涓嶈寮勯敊
-涓夊蹇呴』涓€鑷达細
+## ⚠️ 注意事项
 
-浣嶇疆	璇存槑
-write-api.php 閲?define('API_TOKEN', '...')	鏈嶅姟绔牎楠岀敤
-App 璁剧疆椤?API Token"	瀹㈡埛绔彂閫佺敤
-璋冭瘯鐢?curl 鐨?-H "X-API-Token: ..."	娴嬭瘯鐢?
-涓嶈浠庢枃绔犲唴瀹规垨鑱婂ぉ璁板綍閲屽鍒?Token锛屽彧澶嶅埗 32 浣嶉殢鏈轰覆鏈韩銆傜矘璐村悗鎵嬪姩妫€鏌ラ灏炬病鏈夌┖鏍?/ 鎹㈣銆?
+### 1. Token 不要弄错
 
-濡傛灉 Token 鍑洪敊锛孉pp 浼氬叏绾挎姤"Token 鏃犳晥"銆?
+三处必须一致：
 
-2. 鍗氬鍦板潃鏍煎紡
-姝ｇ‘锛歨ttps://浣犵殑鍩熷悕
+| 位置 | 说明 |
+| --- | --- |
+| write-api.php 里 `define('API_TOKEN', '...')` | 服务端校验用 |
+| App 设置页"API Token" | 客户端发送用 |
+| 调试用 curl 的 `-H "X-API-Token: ..."` | 测试用 |
 
-閿欒锛歨ttps://浣犵殑鍩熷悕/銆乭ttps://浣犵殑鍩熷悕/write-api.php銆乭ttps://浣犵殑鍩熷悕/锛堝熬閮ㄦ湁绌烘牸锛?
+不要从文章内容或聊天记录里复制 Token，只复制 32 位随机串本身。粘贴后手动检查首尾没有空格 / 换行。
 
-3. R2 閰嶇疆
-鍦?UnsplashForTypecho 鎻掍欢璁剧疆椤甸噷蹇呴』濉叏锛?
+如果 Token 出错，App 会全线报"Token 无效"。
 
-r2AccessKey銆乺2SecretKey
+### 2. 博客地址格式
 
-r2Bucket銆乺2AccountId
+- 正确：`https://你的域名`
+- 错误：`https://你的域名/`、`https://你的域名/write-api.php`、`https://你的域名/`（尾部有空格）
 
-r2PublicUrl锛堝叕寮€璁块棶鍩熷悕锛屽 https://img.浣犵殑鍩熷悕锛?
+### 3. R2 配置
 
-r2Folder锛堝 uploads锛?
+在 UnsplashForTypecho 插件设置页里必须填全：
 
-R2 鐨勫叕寮€鍩熷悕瑕佸湪 Cloudflare 鍚庡彴缁戝畾濂斤紝鍚﹀垯鍥剧墖涓婁紶鎴愬姛浣嗚闂?404銆?
+- r2AccessKey、r2SecretKey
+- r2Bucket、r2AccountId
+- r2PublicUrl（公开访问域名，如 `https://img.你的域名`）
+- r2Folder（如 `uploads`）
 
-4. Unsplash 鍚堣瑕佹眰
-App 宸插疄鐜板畬鏁村悎瑙勶細
+R2 的公开域名要在 Cloudflare 后台绑定好，否则图片上传成功但访问 404。
 
-鉁?鍥剧墖涓嬫柟鏈?Photo by 鎽勫奖甯?on Unsplash锛堝彲鐐瑰嚮閾炬帴锛?
+### 4. Unsplash 合规要求
 
-鉁?鎮仠鍥剧墖鏄剧ず绾枃鏈讲鍚嶏紙妗岄潰绔級
+App 已实现完整合规：
 
-鉁?閾炬帴甯?utm_source=TypechoWriter&utm_medium=referral
+- ✅ 图片下方有 `Photo by 摄影师 on Unsplash`（可点击链接）
+- ✅ 悬停图片显示纯文本署名（桌面端）
+- ✅ 链接带 `utm_source=TypechoWriter&utm_medium=referral`
+- ✅ 每次插图自动上报 Download Tracking
 
-鉁?姣忔鎻掑浘鑷姩涓婃姤 Download Tracking
+不要删除署名行，否则会违反 Unsplash API 条款，可能导致生产环境权限被撤销。
 
-涓嶈鍒犻櫎缃插悕琛岋紝鍚﹀垯浼氳繚鍙?Unsplash API 鏉℃锛屽彲鑳藉鑷寸敓浜х幆澧冩潈闄愯鎾ら攢銆?
+### 5. 图片显示问题
 
-5. 鍥剧墖鏄剧ず闂
-App 鎻掑叆鐨勫浘鐗囨牸寮忥細
+App 插入的图片格式：
 
-markdown
+```markdown
 [jpg]
-![鍥? 路 Photo by 鎽勫奖甯?on Unsplash](https://images.unsplash.com/...)
+![图1 · Photo by 摄影师 on Unsplash](https://images.unsplash.com/...)
 [/jpg]
 
 <p style="font-size:13px;color:#666;margin-top:12px;">
-Photo by <a href="...">鎽勫奖甯?/a> on <a href="...">Unsplash</a>
+Photo by <a href="...">摄影师</a> on <a href="...">Unsplash</a>
 </p>
-[jpg]...[/jpg] 鏄?JustifiedGallery 鎻掍欢璇嗗埆鐨勮娉曪紝蹇呴』淇濈暀銆傚垹鎺夊悗鍓嶅彴涓嶄細娓叉煋鎴愮€戝竷娴併€?
+```
 
-6. 鍒嗙被 ID
-write-api.php 閲岀殑 DEFAULT_MID 鏄垎绫?ID锛岄粯璁?1 閫氬父鏄?榛樿鍒嗙被"銆傚鏋滀綘鐨勫崥瀹㈡病鏈夊垎绫?ID 涓?1 鐨勫垎绫伙紝鍙戝竷鏃跺垎绫诲彲鑳芥樉绀哄紓甯搞€?
+`[jpg]...[/jpg]` 是 JustifiedGallery 插件识别的语法，必须保留。删掉后前台不会渲染成瀑布流。
 
-瑙ｅ喅锛氬湪 Typecho 鍚庡彴寤鸿嚦灏戜竴涓垎绫伙紝鎶婂畠鐨?mid 濉埌 DEFAULT_MID銆?
+### 6. 分类 ID
 
-7. Markdown 缂栬緫鍣ㄦ彁绀?
-鍦ㄥ崥瀹㈠悗鍙扮紪杈?App 鍙戠殑鏂囩珷鏃讹紝Typecho 鍙兘寮?杩欑瘒鏂囩珷涓嶆槸鐢?Markdown 璇硶鍒涘缓"銆?
+`write-api.php` 里的 `DEFAULT_MID` 是分类 ID，默认 1 通常是"默认分类"。如果你的博客没有分类 ID 为 1 的分类，发布时分类可能显示异常。
 
-杩欐槸姝ｅ父鐨勶紝鐐?鏄?鍗冲彲銆傚師鍥狅細App 鐩存帴鍐欐暟鎹簱锛宮arkdown 瀛楁鏈銆備笉褰卞搷鍓嶅彴娓叉煋銆?
+解决：在 Typecho 后台建至少一个分类，把它的 mid 填到 `DEFAULT_MID`。
 
-8. 缃戠粶闂
-鏈嶅姟鍣ㄥ繀椤昏兘璁块棶澶栫綉锛圖eepSeek銆乁nsplash銆丷2 閮藉湪鍥藉锛?
+### 7. Markdown 编辑器提示
 
-濡傛灉鏈嶅姟鍣ㄥ湪鍥藉唴锛屾鏌ラ槻鐏銆丏NS銆丼SL 鏄惁姝ｅ父
+在博客后台编辑 App 发的文章时，Typecho 可能弹"这篇文章不是由 Markdown 语法创建"。
 
-curl 娴嬭瘯閫氳繃浣?App 澶辫触 鈫?閫氬父鏄墜鏈虹綉缁滈棶棰橈紙VPN銆丏NS锛?
+这是正常的，点"是"即可。原因：App 直接写数据库，`markdown` 字段未设。不影响前台渲染。
 
-9. 鏁版嵁搴撳吋瀹规€?
-write-api.php 鍏煎 MySQL 鍜?SQLite銆傚鏋滀綘鐢ㄧ殑鏄?MySQL锛孏REATEST() 绛夊嚱鏁版甯稿伐浣滐紱SQLite 涓嬪凡鐢?CASE WHEN 鏇夸唬銆?
+### 8. 网络问题
 
-10. 鏁版嵁澶囦唤
-鏈嶅姟绔細write-api.php 鍗曠嫭澶囦唤涓€浠?
+- 服务器必须能访问外网（DeepSeek、Unsplash、R2 都在国外）
+- 如果服务器在国内，检查防火墙、DNS、SSL 是否正常
+- curl 测试通过但 App 失败 → 通常是手机网络问题（VPN、DNS）
 
-瀹㈡埛绔簮鐮侊細寤鸿鐢?Git 绠＄悊
+### 9. 数据库兼容性
 
-鍏抽敭淇℃伅锛歍oken銆丷2 瀵嗛挜銆乁nsplash Key銆丏eepSeek Key 瀛樺埌瀵嗙爜绠＄悊鍣?
+`write-api.php` 兼容 MySQL 和 SQLite。如果你用的是 MySQL，`GREATEST()` 等函数正常工作；SQLite 下已用 `CASE WHEN` 替代。
 
-鉂?甯歌闂
-Q锛氬彂甯冩椂杞湀寰堜箙锛?
-A锛欰I 鐢熸垚 slug 闇€瑕?1-2 绉掋€傚鏋滄兂璺宠繃锛屽彲浠ュ叧鎺夆€斺€旀妸 write-api.php 閲?generateSlugByAI 鐨勮皟鐢ㄦ敼鎴?uniqid銆?
+### 10. 数据备份
 
-Q锛歎nsplash 鎼滅储杩斿洖鑻辨枃缁撴灉锛?
-A锛歎nsplash API 鏈韩鍙敮鎸佽嫳鏂囷紝App 浼氳嚜鍔ㄦ妸涓枃缈昏瘧鎴愯嫳鏂囧啀鎼溿€?
+- 服务端：`write-api.php` 单独备份一份
+- 客户端源码：建议用 Git 管理
+- 关键信息：Token、R2 密钥、Unsplash Key、DeepSeek Key 存到密码管理器
 
-Q锛氬浘鐗囦笂浼犲埌 R2 鍚庢墦涓嶅紑锛?
-A锛氭鏌?r2PublicUrl 閰嶇疆锛屼互鍙?Cloudflare R2 鍚庡彴鐨勫叕寮€璁块棶璁剧疆銆?
+## ❓ 常见问题
 
-Q锛氭鼎鑹插け璐?/ 瓒呮椂锛?
-A锛欴eepSeek 鏈嶅姟涓嶇ǔ瀹氭垨 Key 浣欓涓嶈冻銆傚幓 DeepSeek 鎺у埗鍙?妫€鏌ヤ綑棰濆拰鐢ㄩ噺銆?
+**Q：发布时转圈很久？**
 
-Q锛氭枃绔犵紪杈戝悗鏄剧ず涔辩爜锛?
-A锛氬彲鑳芥槸缂栫爜闂銆傜‘璁?write-api.php 鏂囦欢鏈韩鏄?UTF-8 鏃?BOM銆?
+A：AI 生成 slug 需要 1-2 秒。如果想跳过，可以关掉——把 `write-api.php` 里 `generateSlugByAI` 的调用改成 `uniqid`。
 
-Q锛欴ownloads 涓€鐩存槸 0锛?
-A锛歎nsplash 鍚庡彴鏁版嵁鏈夊嚑鍒嗛挓鍒板嚑灏忔椂寤惰繜銆傚彟澶栫‘璁?App 鏄渶鏂扮増锛堝惈 download tracking 璋冪敤锛夈€?
+**Q：Unsplash 搜索返回英文结果？**
 
-馃搫 License
+A：Unsplash API 本身只支持英文，App 会自动把中文翻译成英文再搜。
+
+**Q：图片上传到 R2 后打不开？**
+
+A：检查 `r2PublicUrl` 配置，以及 Cloudflare R2 后台的公开访问设置。
+
+**Q：润色失败 / 超时？**
+
+A：DeepSeek 服务不稳定或 Key 余额不足。去 DeepSeek 控制台检查余额和用量。
+
+**Q：文章编辑后显示乱码？**
+
+A：可能是编码问题。确认 `write-api.php` 文件本身是 UTF-8 无 BOM。
+
+**Q：Downloads 一直是 0？**
+
+A：Unsplash 后台数据有几分钟到几小时延迟。另外确认 App 是最新版（含 download tracking 调用）。
+
+## 📄 License
+
 MIT
 
-馃檹 鑷磋阿
-Typecho
+## 🙏 致谢
 
-Unsplash API
-
-DeepSeek
-
-Cloudflare R2
-
-JustifiedGallery 
+- [Typecho](https://typecho.org/)
+- [Unsplash API](https://unsplash.com/developers)
+- [DeepSeek](https://www.deepseek.com/)
+- [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/)
+- [JustifiedGallery](https://github.com/monkeymonk/JustifiedGallery)
